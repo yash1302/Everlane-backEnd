@@ -4,7 +4,8 @@ export const errorStatusCodes = {
     "forbidden": 403,
     "notFound": 404,
     "methodNotAllowed": 405,
-    "conflict": 409
+    "conflict": 409,
+    "internalError":500
 };
 
 export const successStatusCodes = {
@@ -12,4 +13,5 @@ export const successStatusCodes = {
     "created": 201,
     "accepted": 202,
     "noContent": 204,
+    
 };

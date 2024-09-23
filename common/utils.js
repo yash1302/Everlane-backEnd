@@ -27,7 +27,7 @@ const generateJwtToken = async (loginId) => {
   return jsonwebtoken.sign({loginId:loginId}, secretKey, options);
 };
 
-const verifyToken = (token) => {
+const verifyToken = async(token) => {
   try {
     const decoded = jsonwebtoken.verify(token, secretKey);
     return { success: true, data: decoded };

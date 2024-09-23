@@ -3,10 +3,18 @@ import User from "./UserAccount.model.js";
 
 const signupUserService = async (loginId, password) => {
   try {
-    const userInsert = new User({
-      loginId: loginId,
-      password: password,
-    });
+    let userInsert;
+    if (typeof loginId === "string") {
+      userInsert = new User({
+        emailId: loginId,
+        password: password,
+      });
+    } else if (typeof loginId === "number") {
+      userInsert = new User({
+        phoneNumber: loginId,
+        password: password,
+      });
+    }
     const result = await userInsert.save();
     return result;
   } catch (error) {
@@ -17,9 +25,16 @@ const signupUserService = async (loginId, password) => {
 
 const loginUserService = async (loginId) => {
   try {
-    const userPresent = User.find({
-      loginId: loginId,
-    });
+    let userPresent;
+    if (typeof loginId === "string") {
+      userPresent = User.find({
+        emailId: loginId,
+      });
+    } else if (typeof loginId === "number") {
+      userPresent = User.find({
+        phoneNumber: loginId,
+      });
+    }
     return userPresent;
   } catch (error) {
     console.log(error);
@@ -27,4 +42,27 @@ const loginUserService = async (loginId) => {
   }
 };
 
-export default { signupUserService, loginUserService };
+const addUserDetailsService = async(firstName,lastName,contactDetails,res)=>{
+  try {
+    if(typeof res?.locals.loginId === 'number'){
+      const user = await User.findOneAndUpdate(
+        { phoneNumber: res?.locals.loginId },
+        { $set: { firstName: firstName, lastName: lastName, emailId: contactDetails } },
+        { new: true }
+      );
+      return user;
+    }
+    else if(typeof res?.locals.loginId === 'string'){
+      const user = await User.findOneAndUpdate(
+        { emailId: res?.locals.loginId },
+        { $set: { firstName: firstName, lastName: lastName, phoneNumber: contactDetails } },
+        { new: true }
+      );
+      return user;
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+export default { signupUserService, loginUserService,addUserDetailsService };

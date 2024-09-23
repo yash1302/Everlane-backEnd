@@ -9,13 +9,15 @@ import {
 } from "../../constants/responseStatus.constants.js";
 
 const { createdMessage, userLoggedInSuccessfully } = successMessages;
-const { conflictMessage, notFoundMessage } = errorMessages;
+const { conflictMessage, notFoundMessage,internalErrorMessage } = errorMessages;
 const { ok, created, noContent } = successStatusCodes;
-const { conflict,notFound } = errorStatusCodes;
+const { conflict,notFound,internalError } = errorStatusCodes;
 
 export const userAccountMessages = {
   SIGNUPSUCCESS: new messageHandler(created, createdMessage),
   USERPRESENT: new messageHandler(conflict, conflictMessage),
   LOGINSUCCESS: new messageHandler(ok, userLoggedInSuccessfully),
   LOGINFAILURE: new messageHandler(notFound, notFoundMessage),
+  USERDETAILSADDED : new messageHandler(created,createdMessage),
+  USERDETAILSADDITIONFAILED : new messageHandler(internalError,internalErrorMessage)
 };

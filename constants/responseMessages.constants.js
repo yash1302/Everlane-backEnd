@@ -9,6 +9,7 @@ export const errorMessages = {
     "resourceNotFoundMessage":"This resource not found",
     "unauthenticatedJwtToken" :"you are not authenticated to use please enter jwt token",
     "jwtInvalid" : "jwt token is invalid",
+    "internalErrorMessage" : "Internal server error"
 }
 
 export const successMessages = {
