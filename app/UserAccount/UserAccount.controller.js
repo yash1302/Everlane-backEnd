@@ -6,6 +6,7 @@ const {
   USERPRESENT,
   USERDETAILSADDED,
   USERDETAILSADDITIONFAILED,
+  UNAUTHORIZED,
 } = userAccountMessages;
 import utils from "../../common/utils.js";
 
@@ -32,13 +33,17 @@ const signupUserController = async (loginId, password) => {
 const loginUserController = async (loginId, password) => {
   try {
     const user = await loginUserService(loginId);
-    const verifiedPassword = await verifyPassword(
-      password,
-      user[0]?._doc?.password
-    );
-    if (verifiedPassword) {
-      const token = await generateJwtToken(loginId);
-      return token;
+    if (user.length > 0) {
+      const verifiedPassword = await verifyPassword(
+        password,
+        user[0]?._doc?.password
+      );
+      if (verifiedPassword) {
+        const token = await generateJwtToken(loginId);
+        return token;
+      } else {
+        throw UNAUTHORIZED;
+      }
     } else {
       throw LOGINFAILURE;
     }

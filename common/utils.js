@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import dotenv from "dotenv";
+import { v2 as cloudinary } from "cloudinary";
 
 dotenv.config();
 
@@ -24,10 +25,10 @@ const verifyPassword = async (password, hashedPassword) => {
 
 const generateJwtToken = async (loginId) => {
   const options = { expiresIn: "1h" };
-  return jsonwebtoken.sign({loginId:loginId}, secretKey, options);
+  return jsonwebtoken.sign({ loginId: loginId }, secretKey, options);
 };
 
-const verifyToken = async(token) => {
+const verifyToken = async (token) => {
   try {
     const decoded = jsonwebtoken.verify(token, secretKey);
     return { success: true, data: decoded };
@@ -36,4 +37,21 @@ const verifyToken = async(token) => {
   }
 };
 
-export default { hashPassword, verifyPassword, generateJwtToken, verifyToken };
+const imageUpload = async (dataURI) => {
+  try {
+    const data = await cloudinary.uploader.upload_large(dataURI, {
+      resource_type: "auto",
+    });
+    return data.secure_url;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default {
+  hashPassword,
+  verifyPassword,
+  generateJwtToken,
+  verifyToken,
+  imageUpload,
+};

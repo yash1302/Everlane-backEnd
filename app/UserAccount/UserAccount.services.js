@@ -1,4 +1,3 @@
-import mongoConnection from "../connection.js";
 import User from "./UserAccount.model.js";
 
 const signupUserService = async (loginId, password) => {

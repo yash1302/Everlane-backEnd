@@ -9,9 +9,9 @@ import {
 } from "../../constants/responseStatus.constants.js";
 
 const { createdMessage, userLoggedInSuccessfully } = successMessages;
-const { conflictMessage, notFoundMessage,internalErrorMessage } = errorMessages;
+const { conflictMessage, notFoundMessage,internalErrorMessage,unauthorizedMessage } = errorMessages;
 const { ok, created, noContent } = successStatusCodes;
-const { conflict,notFound,internalError } = errorStatusCodes;
+const { conflict,notFound,internalError,unauthorized } = errorStatusCodes;
 
 export const userAccountMessages = {
   SIGNUPSUCCESS: new messageHandler(created, createdMessage),
@@ -19,5 +19,6 @@ export const userAccountMessages = {
   LOGINSUCCESS: new messageHandler(ok, userLoggedInSuccessfully),
   LOGINFAILURE: new messageHandler(notFound, notFoundMessage),
   USERDETAILSADDED : new messageHandler(created,createdMessage),
-  USERDETAILSADDITIONFAILED : new messageHandler(internalError,internalErrorMessage)
+  USERDETAILSADDITIONFAILED : new messageHandler(internalError,internalErrorMessage),
+  UNAUTHORIZED : new messageHandler(unauthorized,unauthorizedMessage)
 };
