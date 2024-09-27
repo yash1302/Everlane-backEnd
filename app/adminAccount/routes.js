@@ -13,6 +13,7 @@ const {
   addNewProductController,
   updateProductController,
   deleteProductController,
+  getAllProductsController,
 } = adminAccountContoller;
 const {
   LOGIN,
@@ -48,20 +49,6 @@ adminRoutes.post(SIGNUP, async (req, res, next) => {
 });
 
 adminRoutes.post(
-  "/upload-profile-picture",
-  authenticateJwtToken,
-  upload.any(),
-  async (req, res, next) => {
-    try {
-      const result = await cloudinaryUploadImage(req.files);
-      res.status(ok).send(new responseHandler(result));
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-adminRoutes.post(
   ADDNEWPRODUCT,
   authenticateJwtToken,
   upload.any(),
@@ -81,7 +68,7 @@ adminRoutes.post(
   authenticateJwtToken,
   async (req, res, next) => {
     try {
-      const { productId } = req.query;
+      const { productId } = req.body;
       const deleteProductResponse = await deleteProductController(productId);
       res.status(ok).send(new responseHandler(deleteProductResponse));
     } catch (error) {
@@ -96,13 +83,22 @@ adminRoutes.post(
   upload.any(),
   async (req, res, next) => {
     try {
-      const { productId, body, files } = req;
-      const updateProductResponse = await updateProductController(
-        productId,
-        body,
-        files
-      );
+      const { body, files } = req;
+      const updateProductResponse = await updateProductController(body, files);
       res.status(ok).send(new responseHandler(updateProductResponse));
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+adminRoutes.get(
+  GETALLPRODUCTS,
+  authenticateJwtToken,
+  async (req, res, next) => {
+    try {
+      const getAllProductsResponse = await getAllProductsController();
+      res.status(ok).send(new responseHandler(getAllProductsResponse));
     } catch (error) {
       next(error);
     }

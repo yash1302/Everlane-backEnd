@@ -2,8 +2,13 @@ import adminServices from "./services.js";
 import utils from "../../common/utils.js";
 import { adminAccountMessages } from "./messages.js";
 
-const { LOGINFAILURE, SIGNUPSUCCESS, ADMINPRESENT, UNAUTHORIZED } =
-  adminAccountMessages;
+const {
+  LOGINFAILURE,
+  SIGNUPSUCCESS,
+  ADMINPRESENT,
+  UNAUTHORIZED,
+  PRODUCTNOTFOUND,
+} = adminAccountMessages;
 
 const { verifyPassword, hashPassword, generateJwtToken, imageUpload } = utils;
 
@@ -13,7 +18,9 @@ const {
   addNewProductService,
   searchProductNamesService,
   updateProductService,
-  deleteProductService
+  deleteProductService,
+  getAllProductsService,
+  getProductById,
 } = adminServices;
 
 const signupAdminController = async (loginId, password) => {
@@ -67,7 +74,7 @@ const addNewProductController = async (information, image) => {
     const productPresent = await searchProductNamesService(information);
     if (productPresent?.length) {
       const result = await updateProductService(information, imageResponses);
-       return result;
+      return result;
     } else {
       const result = await addNewProductService(information, imageResponses);
       return result;
@@ -78,32 +85,51 @@ const addNewProductController = async (information, image) => {
   }
 };
 
-const updateProductController = async(information,images)=>{
+const updateProductController = async (information, images) => {
   try {
-    const imageLinks = images.map((file) => {
-      const b64 = Buffer.from(file.buffer).toString("base64");
-      let dataURI = "data:" + file.mimetype + ";base64," + b64;
-      const imageUrl = imageUpload(dataURI);
-      return imageUrl;
-    });
-    const imageResponses = await Promise.all(imageLinks);
-    const result = await updateProductService(information, imageResponses);
-    return result;
+    if (images.length > 0) {
+      const imageLinks = images.map((file) => {
+        const b64 = Buffer.from(file.buffer).toString("base64");
+        let dataURI = "data:" + file.mimetype + ";base64," + b64;
+        const imageUrl = imageUpload(dataURI);
+        return imageUrl;
+      });
+      const imageResponses = await Promise.all(imageLinks);
+      const result = await updateProductService(information, imageResponses);
+      return result;
+    } else {
+      const result = await updateProductService(information);
+      return result;
+    }
   } catch (error) {
     console.log(error);
     throw error;
   }
-}
+};
 
-const deleteProductController = async(productId)=>{
+const deleteProductController = async (productId) => {
   try {
+    const productPresent = await getProductById(productId);
+    if (productPresent.length > 0) {
+      throw PRODUCTNOTFOUND;
+    }
     const result = await deleteProductService(productId);
     return result;
   } catch (error) {
     console.log(error);
     throw error;
   }
-}
+};
+
+const getAllProductsController = async () => {
+  try {
+    const products = await getAllProductsService();
+    return products;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
 export default {
   loginAdminController,
@@ -111,4 +137,5 @@ export default {
   addNewProductController,
   updateProductController,
   deleteProductController,
+  getAllProductsController,
 };

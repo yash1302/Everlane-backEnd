@@ -61,18 +61,34 @@ const searchProductNamesService = async (productInfo) => {
 
 const updateProductService = async (productInfo, images) => {
   try {
+    const updateFields = {};
+    const fieldsToUpdate = {
+      productDescription: "productDescription",
+      productPrice: "productPrice",
+      productQuantity: "productQuantity",
+      productCategory: "productCategory",
+      avaliableSizes: "productSize",
+      gender: "productGender",
+      productImage: "images",
+    };
+
+    for (const key in fieldsToUpdate) {
+      const productInfoKey = fieldsToUpdate[key];
+      if (productInfo[productInfoKey] !== undefined) {
+        updateFields[key] = productInfo[productInfoKey];
+      }
+    }
+
+    if (images) {
+      updateFields.productImage = images;
+    }
+
+    console.log(updateFields);
+
     const product = Product.findOneAndUpdate(
       { productName: productInfo.productName },
       {
-        $set: {
-          productDescription: productInfo.productDescription,
-          productPrice: productInfo.productPrice,
-          productQuantity: productInfo.productQuantity,
-          productCategory: productInfo.productCategory,
-          avaliableSizes: productInfo.productSize,
-          gender: productInfo.productGender,
-          productImage: images,
-        },
+        $set: updateFields,
       },
       { new: true }
     );
@@ -87,9 +103,31 @@ const deleteProductService = async (productId) => {
   try {
     const product = await Product.findByIdAndUpdate(
       { _id: productId },
-      { $set: { isDeleted: TextTrackCue } },
+      { $set: { isDeleted: true } },
       { new: true }
     );
+    return product;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const getAllProductsService = async () => {
+  try {
+    const products = await Product.find({ isDeleted: false });
+    return products;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const getProductById = async (productId) => {
+  try {
+    const product = await Product.find({
+      $and: [{ _id: productId }, { isDeleted: true }],
+    });
     return product;
   } catch (error) {
     console.error(error);
@@ -103,5 +141,7 @@ export default {
   addNewProductService,
   searchProductNamesService,
   updateProductService,
-  deleteProductService
+  deleteProductService,
+  getAllProductsService,
+  getProductById,
 };
